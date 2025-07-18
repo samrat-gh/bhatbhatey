@@ -1,5 +1,6 @@
 import type { DefaultSession, NextAuthOptions } from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
+import { cookies } from "next/headers";
 
 declare module "next-auth" {
   interface Session extends DefaultSession {
@@ -11,24 +12,6 @@ declare module "next-auth" {
       password?: string | null;
       image?: string | null;
     } & DefaultSession["user"];
-  }
-
-  interface User {
-    accessToken?: string;
-    rememberMe?: boolean;
-  }
-}
-
-declare module "next-auth/jwt" {
-  interface JWT {
-    accessToken?: string;
-    user?: {
-      id?: string;
-      name?: string;
-      email?: string;
-      [key: string]: unknown;
-    };
-    rememberMe?: boolean;
   }
 }
 
@@ -46,6 +29,8 @@ export const authOptions: NextAuthOptions = {
         rememberMe: {},
       },
       async authorize(credentials) {
+        const cookieStore = await cookies();
+
         if (!credentials?.email || !credentials?.password) {
           console.log("creds are null");
           return null;
@@ -62,19 +47,21 @@ export const authOptions: NextAuthOptions = {
 
         if (!res.ok) {
           console.log("error fetching user");
-          return null;
         }
 
         const user = await res.json();
         console.log("user", user);
-
-        if (user && user.accessToken) {
-          // Store the access token in the user object to be handled by JWT callback
-          return {
-            ...user,
-            accessToken: user.accessToken,
-            rememberMe: credentials.rememberMe,
-          };
+        if (user) {
+          if (credentials.rememberMe) {
+            cookieStore.set("token", `${user?.accessToken}`, {
+              maxAge: 24 * 60 * 60 * 30,
+            });
+          } else {
+            cookieStore.set("token", `${user?.accessToken}`, {
+              maxAge: 2 * 60 * 60, //2 hours session
+            });
+          }
+          return user;
         }
         return null;
       },
@@ -83,39 +70,40 @@ export const authOptions: NextAuthOptions = {
   callbacks: {
     async jwt({ token, user }) {
       if (user) {
-        token.accessToken = user.accessToken;
-        token.user = {
-          id: user.id || undefined,
-          name: user.name || undefined,
-          email: user.email || undefined,
-        };
-        token.rememberMe = user.rememberMe;
+        token.user = user;
       }
       return token;
     },
     async session({ session, token }) {
-      if (token.user && token.accessToken) {
-        try {
-          const res = await fetch(`${process.env.BACKEND_URL}/user/details`, {
-            method: "GET",
-            headers: {
-              Authorization: `Bearer ${token.accessToken}`,
-            },
-          });
+      // session.accessToken = token.accessToken as string;
+      const cookieStore = await cookies();
 
-          if (res.ok) {
-            const userDetails = await res.json();
-            console.log("returned user", userDetails);
-            session.user = userDetails.data || token.user;
-            session.accessToken = token.accessToken as string;
-          } else {
-            console.log("user fetch failed");
-            session.user = token.user;
-          }
-        } catch (error) {
-          console.log("Error fetching user details:", error);
-          session.user = token.user;
+      const accessToken = cookieStore.get("token")?.value;
+      // console.log("token2", token.user);
+      // console.log("token1", accessToken);
+      // console.log("Bearer", `Bearer ${accessToken ?? token.user}`);
+
+      if (token.user) {
+        const res = await fetch(`${process.env.BACKEND_URL}/user/details`, {
+          method: "GET",
+          headers: {
+            Authorization: `Bearer ${accessToken ?? token.user}`,
+          },
+        });
+
+        if (!res.ok) {
+          console.log("user fetch failed");
         }
+
+        const user = await res.json();
+        console.log("returned user", user);
+        session.user = token.user;
+        return {
+          ...session,
+          user: {
+            ...user.data,
+          },
+        };
       }
       return session;
     },

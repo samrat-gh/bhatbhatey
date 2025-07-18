@@ -7,6 +7,8 @@ import { Label } from "@/components/ui/label";
 import { AutoCarousel } from "./auto-carousel";
 import Link from "next/link";
 
+import Logo from "@/components/logo";
+
 export function LoginForm({
   className,
   ...props
@@ -19,14 +21,12 @@ export function LoginForm({
             <div className="flex flex-col gap-6">
               <div className="flex flex-col items-center text-center">
                 <div className="mb-4">
-                  <div className="w-16 h-16 bg-gradient-to-br from-orange-400 to-orange-600 rounded-full flex items-center justify-center mb-3">
-                    <span className="text-white font-bold text-xl">B</span>
-                  </div>
+                  <Logo hasLabel={false} />
                 </div>
                 <h1 className="text-2xl font-bold text-gray-900">
                   Welcome to Bhatbhatey
                 </h1>
-                <p className="text-balance text-muted-foreground">
+                <p className="text-muted-foreground text-balance">
                   Sign in to your account
                 </p>
               </div>
@@ -49,7 +49,8 @@ export function LoginForm({
                   </Label>
                   <a
                     href="#"
-                    className="ml-auto text-sm text-orange-600 hover:text-orange-700 underline-offset-2 hover:underline">
+                    className="ml-auto text-sm text-orange-600 underline-offset-2 hover:text-orange-700 hover:underline"
+                  >
                     Forgot your password?
                   </a>
                 </div>
@@ -62,14 +63,16 @@ export function LoginForm({
               </div>
               <Button
                 type="submit"
-                className="w-full bg-orange-600 hover:bg-orange-700 text-white">
+                className="w-full bg-orange-600 text-white hover:bg-orange-700"
+              >
                 Sign In
               </Button>
               <div className="text-center text-sm">
                 Don&apos;t have an account?{" "}
                 <Link
                   href="register"
-                  className="text-orange-600 hover:text-orange-700 underline underline-offset-4">
+                  className="text-orange-600 underline underline-offset-4 hover:text-orange-700"
+                >
                   Sign up
                 </Link>
               </div>
@@ -80,7 +83,7 @@ export function LoginForm({
           </div>
         </CardContent>
       </Card>
-      <div className="text-balance text-center text-xs text-muted-foreground [&_a]:underline [&_a]:underline-offset-4 hover:[&_a]:text-orange-600">
+      <div className="text-muted-foreground text-center text-xs text-balance [&_a]:underline [&_a]:underline-offset-4 hover:[&_a]:text-orange-600">
         By clicking continue, you agree to our <a href="#">Terms of Service</a>{" "}
         and <a href="#">Privacy Policy</a>.
       </div>

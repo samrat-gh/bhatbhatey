@@ -1,5 +1,5 @@
-import { Bike, Facebook, Instagram, Mail, Phone, Twitter } from "lucide-react";
-import Link from "next/link";
+import { Bike, Facebook, Instagram, Mail, Phone, Twitter } from 'lucide-react';
+import Link from 'next/link';
 
 export default function Footer() {
   return (
@@ -20,17 +20,20 @@ export default function Footer() {
             <div className="flex space-x-4">
               <Link
                 href="#"
-                className="text-gray-400 hover:text-orange-500 transition-colors">
+                className="text-gray-400 hover:text-orange-500 transition-colors"
+              >
                 <Facebook className="h-5 w-5" />
               </Link>
               <Link
                 href="#"
-                className="text-gray-400 hover:text-orange-500 transition-colors">
+                className="text-gray-400 hover:text-orange-500 transition-colors"
+              >
                 <Twitter className="h-5 w-5" />
               </Link>
               <Link
                 href="#"
-                className="text-gray-400 hover:text-orange-500 transition-colors">
+                className="text-gray-400 hover:text-orange-500 transition-colors"
+              >
                 <Instagram className="h-5 w-5" />
               </Link>
             </div>
@@ -41,22 +44,26 @@ export default function Footer() {
             <div className="space-y-2">
               <Link
                 href="#features"
-                className="block text-gray-400 hover:text-orange-500 transition-colors">
+                className="block text-gray-400 hover:text-orange-500 transition-colors"
+              >
                 Features
               </Link>
               <Link
                 href="#rentals"
-                className="block text-gray-400 hover:text-orange-500 transition-colors">
+                className="block text-gray-400 hover:text-orange-500 transition-colors"
+              >
                 Rentals
               </Link>
               <Link
                 href="#testimonials"
-                className="block text-gray-400 hover:text-orange-500 transition-colors">
+                className="block text-gray-400 hover:text-orange-500 transition-colors"
+              >
                 Reviews
               </Link>
               <Link
                 href="#faq"
-                className="block text-gray-400 hover:text-orange-500 transition-colors">
+                className="block text-gray-400 hover:text-orange-500 transition-colors"
+              >
                 FAQ
               </Link>
             </div>
@@ -67,22 +74,26 @@ export default function Footer() {
             <div className="space-y-2">
               <Link
                 href="#"
-                className="block text-gray-400 hover:text-orange-500 transition-colors">
+                className="block text-gray-400 hover:text-orange-500 transition-colors"
+              >
                 Help Center
               </Link>
               <Link
                 href="#"
-                className="block text-gray-400 hover:text-orange-500 transition-colors">
+                className="block text-gray-400 hover:text-orange-500 transition-colors"
+              >
                 Terms of Service
               </Link>
               <Link
                 href="#"
-                className="block text-gray-400 hover:text-orange-500 transition-colors">
+                className="block text-gray-400 hover:text-orange-500 transition-colors"
+              >
                 Privacy Policy
               </Link>
               <Link
                 href="#"
-                className="block text-gray-400 hover:text-orange-500 transition-colors">
+                className="block text-gray-400 hover:text-orange-500 transition-colors"
+              >
                 Contact Us
               </Link>
             </div>

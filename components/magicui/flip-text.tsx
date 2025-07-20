@@ -1,10 +1,10 @@
-"use client";
+'use client';
 
-import { AnimatePresence, motion, Variants, MotionProps } from "motion/react";
+import { AnimatePresence, motion, MotionProps, Variants } from 'motion/react';
+import { ElementType } from 'react';
+import React from 'react';
 
-import { cn } from "@/lib/utils";
-import { ElementType } from "react";
-import React from "react";
+import { cn } from '@/lib/utils';
 
 interface FlipTextProps extends MotionProps {
   /** The duration of the animation */
@@ -34,12 +34,12 @@ export function FlipText({
   delayMultiple = 0.08,
 
   className,
-  as: Component = "span",
+  as: Component = 'span',
   variants,
   ...props
 }: FlipTextProps) {
   const MotionComponent = motion.create(Component);
-  const characters = React.Children.toArray(children).join("").split("");
+  const characters = React.Children.toArray(children).join('').split('');
 
   return (
     <div className="flex justify-center space-x-2">
@@ -52,7 +52,7 @@ export function FlipText({
             exit="hidden"
             variants={variants || defaultVariants}
             transition={{ duration, delay: i * delayMultiple }}
-            className={cn("origin-center drop-shadow-sm", className)}
+            className={cn('origin-center drop-shadow-sm', className)}
             {...props}
           >
             {char}

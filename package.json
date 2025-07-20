@@ -6,7 +6,8 @@
     "dev": "next dev --turbopack",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "eslint './**/*.{js,ts,tsx}' --ignore-pattern '.next/**' ",
+    "format": "eslint './**/*.{js,ts,tsx}' --fix --ignore-pattern '.next/**' && prettier '**/*.{json,yaml,md,js,ts,tsx,css,scss,html}' --write --ignore-path .gitignore"
   },
   "dependencies": {
     "@radix-ui/react-label": "^2.1.7",

@@ -1,5 +1,5 @@
-import LoginTrigger from "./login-trigger";
-import NavItems from "./nav-items";
+import LoginTrigger from './login-trigger';
+import NavItems from './nav-items';
 
 export default function Navbar() {
   return (

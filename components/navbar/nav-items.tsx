@@ -1,23 +1,22 @@
-"use client";
+'use client';
 
-import { motion } from "framer-motion";
+import { motion } from 'framer-motion';
+import { Menu, X } from 'lucide-react';
+import Link from 'next/link';
+import { useState } from 'react';
 
-import Link from "next/link";
-
-import { useState } from "react";
-import { Menu, X } from "lucide-react";
-import LoginTrigger from "./login-trigger";
-import Logo from "../logo";
+import Logo from '../logo';
+import LoginTrigger from './login-trigger';
 
 export default function NavItems({ children }: { children?: React.ReactNode }) {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
   const navigationLinks = [
     // { href: "#", label: "Home", active: true },
-    { href: "#", label: "Features" },
-    { href: "#", label: "Rentals" },
-    { href: "#", label: "Reviews" },
-    { href: "#", label: "FAQ" },
+    { href: '#', label: 'Features' },
+    { href: '#', label: 'Rentals' },
+    { href: '#', label: 'Reviews' },
+    { href: '#', label: 'FAQ' },
   ];
 
   return (
@@ -59,7 +58,7 @@ export default function NavItems({ children }: { children?: React.ReactNode }) {
       {isMenuOpen && (
         <motion.div
           initial={{ opacity: 0, height: 0 }}
-          animate={{ opacity: 1, height: "auto" }}
+          animate={{ opacity: 1, height: 'auto' }}
           exit={{ opacity: 0, height: 0 }}
           className="border-t border-gray-200 py-4 md:hidden"
         >

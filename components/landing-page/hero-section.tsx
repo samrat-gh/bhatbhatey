@@ -1,7 +1,8 @@
-import { motion } from "framer-motion";
-import { Bike, Car, CheckCircle } from "lucide-react";
-import { Button } from "@/ui/button";
-import { Badge } from "@/ui/badge";
+import { motion } from 'framer-motion';
+import { Bike, Car, CheckCircle } from 'lucide-react';
+
+import { Badge } from '@/ui/badge';
+import { Button } from '@/ui/button';
 
 export default function HeroSection() {
   return (
@@ -19,7 +20,7 @@ export default function HeroSection() {
                 🎉 Now Available in Your City
               </Badge>
               <h1 className="text-4xl leading-tight font-bold text-gray-900 lg:text-6xl">
-                Ride your way —{" "}
+                Ride your way —{' '}
                 <span className="relative text-orange-500">
                   Motorbikes & Cycles
                   <motion.div
@@ -28,7 +29,7 @@ export default function HeroSection() {
                     animate={{ scaleX: 1 }}
                     transition={{ delay: 0.8, duration: 0.6 }}
                   />
-                </span>{" "}
+                </span>{' '}
                 at your fingertips
               </h1>
               <p className="text-xl leading-relaxed text-gray-600">

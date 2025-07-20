@@ -1,28 +1,29 @@
-"use client";
+'use client';
 
-import { useState, useEffect } from "react";
-import { motion } from "framer-motion";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
+import { motion } from 'framer-motion';
 import {
+  ArrowUp,
+  Award,
   Bike,
   CheckCircle,
-  Star,
-  MapPin,
-  Clock,
-  Shield,
-  CreditCard,
   ChevronDown,
-  ArrowUp,
+  Clock,
+  CreditCard,
+  MapPin,
+  Shield,
+  Star,
   Users,
-  Award,
   Zap,
-} from "lucide-react";
-import Image from "next/image";
+} from 'lucide-react';
+import Image from 'next/image';
+import { useEffect, useState } from 'react';
 
-import Footer from "../footer";
-import HeroSection from "./hero-section";
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent } from '@/components/ui/card';
+
+import Footer from '../footer';
+import HeroSection from './hero-section';
 
 export default function LandingPage() {
   const [openFaq, setOpenFaq] = useState<number | null>(null);
@@ -34,34 +35,34 @@ export default function LandingPage() {
       setShowScrollToTop(window.scrollY > 400);
     };
 
-    window.addEventListener("scroll", handleScroll);
-    return () => window.removeEventListener("scroll", handleScroll);
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
   const scrollToTop = () => {
-    window.scrollTo({ top: 0, behavior: "smooth" });
+    window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
   const stats = [
     {
       icon: <Users className="h-8 w-8 text-orange-500" />,
-      number: "50K+",
-      label: "Happy Riders",
+      number: '50K+',
+      label: 'Happy Riders',
     },
     {
       icon: <Bike className="h-8 w-8 text-orange-500" />,
-      number: "500+",
-      label: "Vehicles",
+      number: '500+',
+      label: 'Vehicles',
     },
     {
       icon: <Award className="h-8 w-8 text-orange-500" />,
-      number: "4.8",
-      label: "Rating",
+      number: '4.8',
+      label: 'Rating',
     },
     {
       icon: <Zap className="h-8 w-8 text-orange-500" />,
-      number: "24/7",
-      label: "Support",
+      number: '24/7',
+      label: 'Support',
     },
   ];
 
@@ -82,101 +83,101 @@ export default function LandingPage() {
   const features = [
     {
       icon: <Clock className="h-8 w-8 text-orange-500" />,
-      title: "Easy Online Booking",
+      title: 'Easy Online Booking',
       description:
-        "Book your ride in just a few clicks. Quick, simple, and hassle-free.",
+        'Book your ride in just a few clicks. Quick, simple, and hassle-free.',
     },
     {
       icon: <CreditCard className="h-8 w-8 text-orange-500" />,
-      title: "Affordable Prices",
+      title: 'Affordable Prices',
       description:
-        "Competitive rates with transparent pricing. No hidden fees, ever.",
+        'Competitive rates with transparent pricing. No hidden fees, ever.',
     },
     {
       icon: <Shield className="h-8 w-8 text-orange-500" />,
-      title: "Verified & Maintained",
+      title: 'Verified & Maintained',
       description:
-        "All vehicles are regularly serviced and safety-checked for your peace of mind.",
+        'All vehicles are regularly serviced and safety-checked for your peace of mind.',
     },
   ];
 
   const rentals = [
     {
       id: 1,
-      name: "Sport Bike",
-      type: "Motorbike",
-      price: "₹499",
-      period: "/day",
-      image: "/sports-bike.jpg",
+      name: 'Sport Bike',
+      type: 'Motorbike',
+      price: '₹499',
+      period: '/day',
+      image: '/sports-bike.jpg',
       rating: 4.8,
-      features: ["Fuel Efficient", "GPS Enabled", "Helmet Included"],
+      features: ['Fuel Efficient', 'GPS Enabled', 'Helmet Included'],
     },
     {
       id: 2,
-      name: "City Cruiser",
-      type: "Bicycle",
-      price: "₹299",
-      period: "/day",
-      image: "/bycycle.jpg",
+      name: 'City Cruiser',
+      type: 'Bicycle',
+      price: '₹299',
+      period: '/day',
+      image: '/bycycle.jpg',
       rating: 4.9,
-      features: ["Lightweight", "Comfortable Seat", "Lock Included"],
+      features: ['Lightweight', 'Comfortable Seat', 'Lock Included'],
     },
     {
       id: 3,
-      name: "Adventure Bike",
-      type: "Motorbike",
-      price: "₹999",
-      period: "/day",
-      image: "/bike.webp",
+      name: 'Adventure Bike',
+      type: 'Motorbike',
+      price: '₹999',
+      period: '/day',
+      image: '/bike.webp',
       rating: 4.7,
-      features: ["Off-road Ready", "Large Tank", "Touring Package"],
+      features: ['Off-road Ready', 'Large Tank', 'Touring Package'],
     },
   ];
 
   const testimonials = [
     {
-      name: "Priya Sharma",
-      location: "Mumbai",
+      name: 'Priya Sharma',
+      location: 'Mumbai',
       rating: 5,
       comment:
-        "Amazing service! The bike was in perfect condition and the booking process was super smooth. Highly recommended!",
+        'Amazing service! The bike was in perfect condition and the booking process was super smooth. Highly recommended!',
     },
     {
-      name: "Rahul Kumar",
-      location: "Delhi",
+      name: 'Rahul Kumar',
+      location: 'Delhi',
       rating: 5,
       comment:
         "Great prices and excellent customer service. I've been using BhatBhatey for months now. Never disappointed!",
     },
     {
-      name: "Sneha Patel",
-      location: "Bangalore",
+      name: 'Sneha Patel',
+      location: 'Bangalore',
       rating: 4,
       comment:
-        "Love the variety of bikes available. The app is user-friendly and the vehicles are always clean and well-maintained.",
+        'Love the variety of bikes available. The app is user-friendly and the vehicles are always clean and well-maintained.',
     },
   ];
 
   const faqs = [
     {
-      question: "How do I book a vehicle?",
+      question: 'How do I book a vehicle?',
       answer:
         "Simply browse our available vehicles, select your preferred dates, and complete the booking through our secure payment system. You'll receive instant confirmation.",
     },
     {
-      question: "What documents do I need?",
+      question: 'What documents do I need?',
       answer:
         "You'll need a valid driving license, government-issued ID proof, and a security deposit. All documents can be uploaded during the booking process.",
     },
     {
-      question: "Is fuel included in the rental?",
+      question: 'Is fuel included in the rental?',
       answer:
         "Vehicles are provided with a full tank. You're responsible for refueling before return. We also offer fuel packages for added convenience.",
     },
     {
-      question: "What if I face issues during my ride?",
+      question: 'What if I face issues during my ride?',
       answer:
-        "We provide 24/7 roadside assistance. Simply call our support number, and our team will help you resolve any issues quickly.",
+        'We provide 24/7 roadside assistance. Simply call our support number, and our team will help you resolve any issues quickly.',
     },
   ];
 
@@ -195,12 +196,14 @@ export default function LandingPage() {
             initial="initial"
             whileInView="animate"
             viewport={{ once: true }}
-            className="grid grid-cols-2 md:grid-cols-4 gap-8">
+            className="grid grid-cols-2 md:grid-cols-4 gap-8"
+          >
             {stats.map((stat, index) => (
               <motion.div
                 key={index}
                 variants={fadeInUp}
-                className="text-center group">
+                className="text-center group"
+              >
                 <div className="mb-4 flex justify-center transform group-hover:scale-110 transition-transform duration-300">
                   {stat.icon}
                 </div>
@@ -224,7 +227,8 @@ export default function LandingPage() {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.6 }}
-            className="text-center mb-16">
+            className="text-center mb-16"
+          >
             <h2 className="text-3xl lg:text-4xl font-bold text-gray-900 mb-4">
               Why Choose BhatBhatey?
             </h2>
@@ -239,7 +243,8 @@ export default function LandingPage() {
             initial="initial"
             whileInView="animate"
             viewport={{ once: true }}
-            className="grid md:grid-cols-3 gap-8">
+            className="grid md:grid-cols-3 gap-8"
+          >
             {features.map((feature, index) => (
               <motion.div key={index} variants={fadeInUp}>
                 <Card className="h-full border-0 shadow-lg hover:shadow-xl transition-shadow duration-300">
@@ -267,7 +272,8 @@ export default function LandingPage() {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.6 }}
-            className="text-center mb-16">
+            className="text-center mb-16"
+          >
             <h2 className="text-3xl lg:text-4xl font-bold text-gray-900 mb-4">
               Popular Rentals
             </h2>
@@ -282,13 +288,14 @@ export default function LandingPage() {
             initial="initial"
             whileInView="animate"
             viewport={{ once: true }}
-            className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+            className="grid md:grid-cols-2 lg:grid-cols-3 gap-8"
+          >
             {rentals.map((rental) => (
               <motion.div key={rental.id} variants={fadeInUp}>
                 <Card className="overflow-hidden border-0 shadow-lg hover:shadow-2xl transition-all duration-300 hover:-translate-y-2 group">
                   <div className="relative overflow-hidden">
                     <Image
-                      src={rental.image || "/placeholder.svg"}
+                      src={rental.image || '/placeholder.svg'}
                       alt={rental.name}
                       width={300}
                       height={200}
@@ -326,7 +333,8 @@ export default function LandingPage() {
                       {rental.features.map((feature, idx) => (
                         <div
                           key={idx}
-                          className="flex items-center space-x-2 text-sm text-gray-600">
+                          className="flex items-center space-x-2 text-sm text-gray-600"
+                        >
                           <CheckCircle className="h-4 w-4 text-green-500" />
                           <span>{feature}</span>
                         </div>
@@ -355,7 +363,8 @@ export default function LandingPage() {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.6 }}
-            className="text-center mb-16">
+            className="text-center mb-16"
+          >
             <h2 className="text-3xl lg:text-4xl font-bold text-gray-900 mb-4">
               What Our Riders Say
             </h2>
@@ -370,7 +379,8 @@ export default function LandingPage() {
             initial="initial"
             whileInView="animate"
             viewport={{ once: true }}
-            className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+            className="grid md:grid-cols-2 lg:grid-cols-3 gap-8"
+          >
             {testimonials.map((testimonial, index) => (
               <motion.div key={index} variants={fadeInUp}>
                 <Card className="h-full border-0 shadow-lg">
@@ -416,7 +426,8 @@ export default function LandingPage() {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.6 }}
-            className="text-center text-white">
+            className="text-center text-white"
+          >
             <h2 className="text-3xl lg:text-4xl font-bold mb-4">
               Ready to Start Your Journey?
             </h2>
@@ -427,13 +438,15 @@ export default function LandingPage() {
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <Button
                 size="lg"
-                className="bg-white text-orange-600 hover:bg-gray-100 px-8 py-3 text-lg font-semibold transform hover:scale-105 transition-all duration-200">
+                className="bg-white text-orange-600 hover:bg-gray-100 px-8 py-3 text-lg font-semibold transform hover:scale-105 transition-all duration-200"
+              >
                 Book Your Ride Now
               </Button>
               <Button
                 size="lg"
                 variant="outline"
-                className="border-white text-white hover:bg-white hover:text-orange-600 px-8 py-3 text-lg font-semibold bg-transparent transform hover:scale-105 transition-all duration-200">
+                className="border-white text-white hover:bg-white hover:text-orange-600 px-8 py-3 text-lg font-semibold bg-transparent transform hover:scale-105 transition-all duration-200"
+              >
                 Download App
               </Button>
             </div>
@@ -449,7 +462,8 @@ export default function LandingPage() {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.6 }}
-            className="text-center mb-16">
+            className="text-center mb-16"
+          >
             <h2 className="text-3xl lg:text-4xl font-bold text-gray-900 mb-4">
               Frequently Asked Questions
             </h2>
@@ -464,30 +478,31 @@ export default function LandingPage() {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.6 }}
-            className="max-w-3xl mx-auto space-y-4">
+            className="max-w-3xl mx-auto space-y-4"
+          >
             {faqs.map((faq, index) => (
               <Card key={index} className="border-0 shadow-lg">
                 <CardContent className="p-0">
                   <button
                     className="w-full p-6 text-left flex justify-between items-center hover:bg-gray-50 transition-colors"
-                    onClick={() =>
-                      setOpenFaq(openFaq === index ? null : index)
-                    }>
+                    onClick={() => setOpenFaq(openFaq === index ? null : index)}
+                  >
                     <span className="font-semibold text-gray-900 text-lg">
                       {faq.question}
                     </span>
                     <ChevronDown
                       className={`h-5 w-5 text-gray-500 transition-transform ${
-                        openFaq === index ? "rotate-180" : ""
+                        openFaq === index ? 'rotate-180' : ''
                       }`}
                     />
                   </button>
                   {openFaq === index && (
                     <motion.div
                       initial={{ opacity: 0, height: 0 }}
-                      animate={{ opacity: 1, height: "auto" }}
+                      animate={{ opacity: 1, height: 'auto' }}
                       exit={{ opacity: 0, height: 0 }}
-                      className="px-6 pb-6">
+                      className="px-6 pb-6"
+                    >
                       <p className="text-gray-600 leading-relaxed">
                         {faq.answer}
                       </p>
@@ -510,7 +525,8 @@ export default function LandingPage() {
           initial={{ scale: 0 }}
           animate={{ scale: 1 }}
           transition={{ delay: 1 }}
-          className="relative">
+          className="relative"
+        >
           <Button className="bg-orange-500 hover:bg-orange-600 text-white rounded-full w-14 h-14 shadow-lg hover:shadow-xl transition-all duration-300 group relative z-10">
             <Bike className="h-6 w-6 group-hover:scale-110 transition-transform duration-200" />
           </Button>
@@ -524,7 +540,7 @@ export default function LandingPage() {
             transition={{
               duration: 2,
               repeat: Infinity,
-              ease: "easeInOut",
+              ease: 'easeInOut',
             }}
           />
         </motion.div>
@@ -534,11 +550,13 @@ export default function LandingPage() {
           <motion.div
             initial={{ scale: 0 }}
             animate={{ scale: 1 }}
-            exit={{ scale: 0 }}>
+            exit={{ scale: 0 }}
+          >
             <Button
               onClick={scrollToTop}
               variant="outline"
-              className="bg-white hover:bg-gray-50 text-gray-700 rounded-full w-12 h-12 shadow-lg hover:shadow-xl transition-all duration-300 border-gray-200">
+              className="bg-white hover:bg-gray-50 text-gray-700 rounded-full w-12 h-12 shadow-lg hover:shadow-xl transition-all duration-300 border-gray-200"
+            >
               <ArrowUp className="h-4 w-4" />
             </Button>
           </motion.div>

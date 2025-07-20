@@ -1,33 +1,34 @@
-"use client";
+'use client';
 
-import { useEffect, useState } from "react";
-import { cn } from "@/lib/utils";
+import { useEffect, useState } from 'react';
+
+import { cn } from '@/lib/utils';
 
 const carouselImages = [
   {
-    src: "/placeholder.svg?height=600&width=400",
-    alt: "Delicious Indian cuisine",
-    title: "Authentic Flavors",
+    src: '/placeholder.svg?height=600&width=400',
+    alt: 'Delicious Indian cuisine',
+    title: 'Authentic Flavors',
   },
   {
-    src: "/placeholder.svg?height=600&width=400",
-    alt: "Fresh ingredients",
-    title: "Fresh Ingredients",
+    src: '/placeholder.svg?height=600&width=400',
+    alt: 'Fresh ingredients',
+    title: 'Fresh Ingredients',
   },
   {
-    src: "/placeholder.svg?height=600&width=400",
-    alt: "Traditional cooking",
-    title: "Traditional Recipes",
+    src: '/placeholder.svg?height=600&width=400',
+    alt: 'Traditional cooking',
+    title: 'Traditional Recipes',
   },
   {
-    src: "/placeholder.svg?height=600&width=400",
-    alt: "Happy customers",
-    title: "Happy Customers",
+    src: '/placeholder.svg?height=600&width=400',
+    alt: 'Happy customers',
+    title: 'Happy Customers',
   },
   {
-    src: "/placeholder.svg?height=600&width=400",
-    alt: "Restaurant ambiance",
-    title: "Great Ambiance",
+    src: '/placeholder.svg?height=600&width=400',
+    alt: 'Restaurant ambiance',
+    title: 'Great Ambiance',
   },
 ];
 
@@ -55,11 +56,12 @@ export function AutoCarousel() {
           <div
             key={index}
             className={cn(
-              "absolute inset-0 transition-opacity duration-1000 ease-in-out",
-              index === currentIndex ? "opacity-100" : "opacity-0"
-            )}>
+              'absolute inset-0 transition-opacity duration-1000 ease-in-out',
+              index === currentIndex ? 'opacity-100' : 'opacity-0'
+            )}
+          >
             <img
-              src={image.src || "/placeholder.svg"}
+              src={image.src || '/placeholder.svg'}
               alt={image.alt}
               className="h-full w-full object-cover"
             />
@@ -81,10 +83,10 @@ export function AutoCarousel() {
           <button
             key={index}
             className={cn(
-              "w-2 h-2 rounded-full transition-all duration-300",
+              'w-2 h-2 rounded-full transition-all duration-300',
               index === currentIndex
-                ? "bg-white scale-125"
-                : "bg-white/50 hover:bg-white/75"
+                ? 'bg-white scale-125'
+                : 'bg-white/50 hover:bg-white/75'
             )}
             onClick={() => setCurrentIndex(index)}
             aria-label={`Go to slide ${index + 1}`}

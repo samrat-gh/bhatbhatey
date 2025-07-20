@@ -1,8 +1,9 @@
-"use client";
+'use client';
 
-import { motion } from "framer-motion";
-import { Bike } from "lucide-react";
-import { FlipText } from "../magicui/flip-text";
+import { motion } from 'framer-motion';
+import { Bike } from 'lucide-react';
+
+import { FlipText } from '../magicui/flip-text';
 
 interface LogoProps {
   hasLabel?: boolean;

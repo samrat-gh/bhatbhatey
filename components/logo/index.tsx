@@ -3,8 +3,6 @@
 import { motion } from 'framer-motion';
 import { Bike } from 'lucide-react';
 
-import { FlipText } from '../magicui/flip-text';
-
 interface LogoProps {
   hasLabel?: boolean;
 }
@@ -20,13 +18,13 @@ export default function Logo({ hasLabel = false }: LogoProps) {
         <Bike className="h-6 w-6 text-white" />
       </div>
       {hasLabel && (
-        <span className="inline text-2xl font-bold text-gray-900 group-hover:hidden">
+        <span className="inline text-2xl font-bold text-gray-900">
           BhatBhatey
         </span>
       )}
-      <FlipText className="hidden font-bold -tracking-widest text-black group-hover:block">
+      {/* <FlipText className="hidden font-bold -tracking-widest text-black group-hover:block">
         Flip Text
-      </FlipText>
+      </FlipText> */}
     </motion.div>
   );
 }

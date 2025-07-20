@@ -1,5 +1,10 @@
+'use client';
+
 import Link from 'next/link';
+import { signIn } from 'next-auth/react';
 import type React from 'react';
+import { useForm } from 'react-hook-form';
+import { toast } from 'sonner';
 
 import Logo from '@/components/logo';
 import { Button } from '@/components/ui/button';
@@ -9,16 +14,37 @@ import { Label } from '@/components/ui/label';
 import { cn } from '@/lib/utils';
 
 import { AutoCarousel } from './auto-carousel';
+interface LoginFormInterface {
+  email: string;
+  password: string;
+}
 
 export function LoginForm({
   className,
   ...props
 }: React.ComponentProps<'div'>) {
+  const { register, handleSubmit } = useForm<LoginFormInterface>();
+
+  const onSubmit = async (data: LoginFormInterface) => {
+    console.log('darta', data);
+    try {
+      const result = await signIn('credentials', {
+        email: data.email,
+        password: data.password,
+        rememeberMe: false,
+      });
+      if (result?.error) {
+        toast.error('Invalid credentials. Please try again.');
+      }
+    } catch (err) {
+      toast.error(`couldn't login at the moment, try again`);
+    }
+  };
   return (
     <div className={cn('flex flex-col gap-6', className)} {...props}>
       <Card className="overflow-hidden border-orange-200">
         <CardContent className="grid p-0 md:grid-cols-2">
-          <form className="p-6 md:p-8">
+          <form className="p-6 md:p-8" onSubmit={handleSubmit(onSubmit)}>
             <div className="flex flex-col gap-6">
               <div className="flex flex-col items-center text-center">
                 <div className="mb-4">
@@ -39,6 +65,13 @@ export function LoginForm({
                   id="email"
                   type="email"
                   placeholder="m@example.com"
+                  {...register('email', {
+                    required: true,
+                    pattern: {
+                      value: /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/,
+                      message: 'Invalid email address',
+                    },
+                  })}
                   required
                   className="border-gray-300 focus:border-orange-500 focus:ring-orange-500"
                 />
@@ -58,6 +91,17 @@ export function LoginForm({
                 <Input
                   id="password"
                   type="password"
+                  {...register('password', {
+                    required: true,
+                    minLength: {
+                      value: 6,
+                      message: 'Password must be at least 6 characters',
+                    },
+                    maxLength: {
+                      value: 20,
+                      message: 'Password must be at most 20 characters',
+                    },
+                  })}
                   required
                   className="border-gray-300 focus:border-orange-500 focus:ring-orange-500"
                 />

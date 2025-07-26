@@ -6,7 +6,7 @@ export const getAuthSession = () => getServerSession(authOptions);
 
 export const getCurrentUser = async () => {
   const session = await getAuthSession();
-  console.log('sessoin', session);
+
   if (!session?.user.name) {
     return undefined;
   }

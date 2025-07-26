@@ -1,0 +1,60 @@
+generator client {
+  provider = "prisma-client-js"
+  output   = "./generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        String   @id @default(uuid())
+  name      String
+  email     String   @unique
+  phone     String
+  password  String
+  createdAt DateTime @default(now())
+  rentals   Rental[]
+}
+
+model Vehicle {
+  id          String      @id @default(uuid())
+  name        String
+  type        VehicleType
+  brand       String
+  model       String
+  description String
+  mileage     Float
+  costPerDay  Float
+  imageUrl    String?
+  available   Boolean     @default(true)
+  createdAt   DateTime    @default(now())
+  rentals     Rental[]
+}
+
+model Rental {
+  id        String       @id @default(uuid())
+  userId    String
+  vehicleId String
+  startDate DateTime
+  endDate   DateTime
+  totalCost Float
+  status    RentalStatus @default(PENDING)
+  createdAt DateTime     @default(now())
+  user      User         @relation(fields: [userId], references: [id])
+  vehicle   Vehicle      @relation(fields: [vehicleId], references: [id])
+}
+
+enum VehicleType {
+  BIKE
+  CAR
+  CYCLE
+}
+
+enum RentalStatus {
+  PENDING
+  CONFIRMED
+  CANCELLED
+  COMPLETED
+}

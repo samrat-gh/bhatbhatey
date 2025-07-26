@@ -36,28 +36,26 @@ export const authOptions: NextAuthOptions = {
           return null;
         }
 
-        const res = await fetch(`${process.env.BACKEND_URL}/user/login`, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            email: credentials.email,
-            password: credentials.password,
-          }),
-        });
+        const res = await fetch(
+          `${process.env.HOST_URL}/api/auth/login?email=${credentials.email}&password=${credentials.password}`,
+          {
+            method: 'GET',
+            headers: { 'Content-Type': 'application/json' },
+          }
+        );
 
         if (!res.ok) {
           console.log('error fetching user');
         }
-
         const user = await res.json();
         console.log('user', user);
         if (user) {
           if (credentials.rememberMe) {
-            cookieStore.set('token', `${user?.accessToken}`, {
+            cookieStore.set('token', `${user?.token}`, {
               maxAge: 24 * 60 * 60 * 30,
             });
           } else {
-            cookieStore.set('token', `${user?.accessToken}`, {
+            cookieStore.set('token', `${user?.token}`, {
               maxAge: 2 * 60 * 60, //2 hours session
             });
           }
@@ -74,20 +72,20 @@ export const authOptions: NextAuthOptions = {
       }
       return token;
     },
-    async session({ session, token }) {
-      // session.accessToken = token.accessToken as string;
+    async session({ session, token }: { session: any; token: any }) {
       const cookieStore = await cookies();
 
       const accessToken = cookieStore.get('token')?.value;
-      // console.log("token2", token.user);
-      // console.log("token1", accessToken);
-      // console.log("Bearer", `Bearer ${accessToken ?? token.user}`);
+      // console.log('token2', token.user?.token ?? '');
+      // console.log('token1', accessToken);
+      // console.log('Bearer', `Bearer ${accessToken ?? token.token}`);
 
-      if (token.user) {
-        const res = await fetch(`${process.env.BACKEND_URL}/user/details`, {
+      if (accessToken || token.user) {
+        // console.log(accessToken, token.user);
+        const res = await fetch(`${process.env.HOST_URL}/api/auth/me`, {
           method: 'GET',
           headers: {
-            Authorization: `Bearer ${accessToken ?? token.user}`,
+            Authorization: `Bearer ${accessToken ?? token.user?.token}`,
           },
         });
 
@@ -96,12 +94,12 @@ export const authOptions: NextAuthOptions = {
         }
 
         const user = await res.json();
-        console.log('returned user', user);
+
         session.user = token.user;
         return {
           ...session,
           user: {
-            ...user.data,
+            ...user.user,
           },
         };
       }

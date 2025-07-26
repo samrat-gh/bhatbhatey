@@ -26,16 +26,19 @@ export function LoginForm({
   const { register, handleSubmit } = useForm<LoginFormInterface>();
 
   const onSubmit = async (data: LoginFormInterface) => {
-    console.log('darta', data);
     try {
       const result = await signIn('credentials', {
         email: data.email,
         password: data.password,
         rememeberMe: false,
+        callbackUrl: '/vehicles',
       });
+
+      console.log('result ????', result);
       if (result?.error) {
         toast.error('Invalid credentials. Please try again.');
       }
+      // redirect('/vehicles');
     } catch (err) {
       toast.error(`couldn't login at the moment, try again`);
     }

@@ -73,9 +73,12 @@ export async function GET(request: NextRequest) {
     }
   } catch (err: any) {
     console.log('Error', err);
-    return {
-      success: false,
-      messsage: err?.message || 'something went wrong!',
-    };
+    return new NextResponse(
+      JSON.stringify({
+        success: false,
+        message: err?.message || 'something went wrong!',
+      }),
+      { status: 500 }
+    );
   }
 }

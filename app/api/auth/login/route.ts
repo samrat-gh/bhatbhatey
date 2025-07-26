@@ -43,7 +43,10 @@ export async function GET(req: NextRequest) {
     });
 
     if (user) {
-      const isPasswordMatched = bcrypt.compare(password, user?.password ?? '');
+      const isPasswordMatched = await bcrypt.compare(
+        password,
+        user?.password ?? ''
+      );
 
       if (!isPasswordMatched) {
         console.log(`password doesn't match`);
@@ -76,7 +79,13 @@ export async function GET(req: NextRequest) {
         );
       }
     } else {
-      return new Error('accessToken not found');
+      return new NextResponse(
+        JSON.stringify({
+          success: false,
+          message: 'Access token not found',
+        }),
+        { status: 500 }
+      );
     }
   }
 }

@@ -15,7 +15,7 @@ export async function POST(request: NextRequest) {
     },
   });
 
-  if (!ifUserExist) {
+  if (ifUserExist) {
     return new NextResponse(
       JSON.stringify({
         success: false,
@@ -63,7 +63,13 @@ export async function POST(request: NextRequest) {
         );
       }
     } else {
-      return new Error('accessToken not found');
+      return new NextResponse(
+        JSON.stringify({
+          success: false,
+          message: 'User creation failed',
+        }),
+        { status: 500 }
+      );
     }
 
     return new NextResponse(

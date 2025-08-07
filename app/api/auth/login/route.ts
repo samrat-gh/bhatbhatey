@@ -73,7 +73,12 @@ export async function GET(req: NextRequest) {
         return new NextResponse(
           JSON.stringify({
             success: true,
-            user: user,
+            user: {
+              id: user.id,
+              name: user.name,
+              email: user.email,
+              phone: user.phone,
+            },
             token: access_token,
           })
         );

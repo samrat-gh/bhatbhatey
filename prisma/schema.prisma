@@ -19,9 +19,21 @@ model User {
   rentals   Rental[]
 }
 
+model Merchant  {
+  id        String   @id @default(uuid())
+  name      String
+  logo      String?
+  address   String
+  email     String   @unique
+  phone     String
+  password  String
+  createdAt DateTime @default(now())
+  vehicles  Vehicle[]
+}
 model Vehicle {
   id          String      @id @default(uuid())
   name        String
+  slug        String      @unique 
   type        VehicleType
   brand       String
   model       String
@@ -32,6 +44,17 @@ model Vehicle {
   available   Boolean     @default(true)
   createdAt   DateTime    @default(now())
   rentals     Rental[]
+  merchantId  String
+  merchant    Merchant    @relation(fields: [merchantId], references: [id])
+  // @@index([slug]) // Index for faster lookups by slug
+  // @@map("vehicles") // Map to the "vehicles" table in the database
+  // @@unique([name, brand, model]) // Ensure unique combination of name, brand, model
+  // @@fulltext([name, description]) // Full-text search on name and description
+  // @@index([type]) // Index for vehicle type for faster filtering
+  // @@index([available]) // Index for availability status for faster filtering
+  // @@index([createdAt]) // Index for created date for faster sorting
+  // @@index([costPerDay]) // Index for cost per day for faster sorting
+  // @@index([mileage]) // Index for mileage for faster filtering  
 }
 
 model Rental {

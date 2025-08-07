@@ -1,8 +1,9 @@
 import { motion } from 'framer-motion';
 import { Bike, Car, CheckCircle } from 'lucide-react';
+import Link from 'next/link';
 
+import { cn } from '@/lib/utils';
 import { Badge } from '@/ui/badge';
-import { Button } from '@/ui/button';
 
 export default function HeroSection() {
   return (
@@ -44,19 +45,24 @@ export default function HeroSection() {
             </div>
 
             <div className="flex flex-col gap-4 sm:flex-row">
-              <Button
-                size="lg"
-                className="transform bg-orange-500 px-8 py-3 text-lg text-white shadow-lg transition-all duration-200 hover:scale-105 hover:bg-orange-600 hover:shadow-xl"
+              <Link
+                href="/vehicles"
+                className={cn(
+                  "inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-[color,box-shadow] disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px]",
+                  'transform bg-orange-500 px-8 py-2 text-lg text-white shadow-lg transition-all duration-200 hover:scale-105 hover:bg-orange-600 hover:shadow-xl'
+                )}
               >
                 Book a Ride
-              </Button>
-              <Button
-                size="lg"
-                variant="outline"
-                className="transform border-orange-500 bg-transparent px-8 py-3 text-lg text-orange-500 shadow-lg transition-all duration-200 hover:scale-105 hover:bg-orange-50 hover:shadow-xl"
+              </Link>
+              <Link
+                href="/vehicles"
+                className={cn(
+                  "inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-[color,box-shadow] disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px]",
+                  'transform border border-orange-500 bg-transparent px-8 py-2 text-lg text-orange-500 shadow-lg transition-all duration-200 hover:scale-105 hover:bg-orange-50 hover:shadow-xl'
+                )}
               >
                 Explore Rides
-              </Button>
+              </Link>
             </div>
 
             <div className="flex items-center space-x-8 text-sm text-gray-600">

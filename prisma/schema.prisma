@@ -16,24 +16,26 @@ model User {
   phone     String
   password  String
   createdAt DateTime @default(now())
+  orders    Orders[]
   rentals   Rental[]
 }
 
-model Merchant  {
-  id        String   @id @default(uuid())
+model Merchant {
+  id        String    @id @default(uuid())
   name      String
   logo      String?
   address   String
-  email     String   @unique
+  email     String    @unique
   phone     String
   password  String
-  createdAt DateTime @default(now())
+  createdAt DateTime  @default(now())
   vehicles  Vehicle[]
 }
+
 model Vehicle {
   id          String      @id @default(uuid())
   name        String
-  slug        String      @unique 
+  slug        String      @unique
   type        VehicleType
   brand       String
   model       String
@@ -43,18 +45,10 @@ model Vehicle {
   imageUrl    String?
   available   Boolean     @default(true)
   createdAt   DateTime    @default(now())
-  rentals     Rental[]
   merchantId  String
+  orders      Orders[]
+  rentals     Rental[]
   merchant    Merchant    @relation(fields: [merchantId], references: [id])
-  // @@index([slug]) // Index for faster lookups by slug
-  // @@map("vehicles") // Map to the "vehicles" table in the database
-  // @@unique([name, brand, model]) // Ensure unique combination of name, brand, model
-  // @@fulltext([name, description]) // Full-text search on name and description
-  // @@index([type]) // Index for vehicle type for faster filtering
-  // @@index([available]) // Index for availability status for faster filtering
-  // @@index([createdAt]) // Index for created date for faster sorting
-  // @@index([costPerDay]) // Index for cost per day for faster sorting
-  // @@index([mileage]) // Index for mileage for faster filtering  
 }
 
 model Rental {
@@ -66,14 +60,48 @@ model Rental {
   totalCost Float
   status    RentalStatus @default(PENDING)
   createdAt DateTime     @default(now())
+  orders    Orders[]
   user      User         @relation(fields: [userId], references: [id])
   vehicle   Vehicle      @relation(fields: [vehicleId], references: [id])
+}
+
+model Orders {
+  id             String       @id @default(uuid())
+  pickupDate     DateTime
+  totalCost      Float
+  pickupLocation String
+  userId         String
+  vehicleId      String
+  rentalId       String
+  status         RentalStatus @default(PENDING)
+  createdAt      DateTime     @default(now())
+  rental         Rental       @relation(fields: [rentalId], references: [id])
+  user           User         @relation(fields: [userId], references: [id])
+  vehicle        Vehicle      @relation(fields: [vehicleId], references: [id])
+  payments       Payment[]
+}
+
+model Payment {
+  id            String        @id @default(uuid())
+  orderId       String
+  transactionId String
+  amount        Float
+  status        PaymentStatus @default(PENDING)
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
+  order         Orders        @relation(fields: [orderId], references: [id])
 }
 
 enum VehicleType {
   BIKE
   CAR
   CYCLE
+}
+
+enum PaymentStatus {
+  PENDING
+  COMPLETED
+  FAILED
 }
 
 enum RentalStatus {

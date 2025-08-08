@@ -24,12 +24,6 @@ interface ApiResponse {
   data: Vehicle;
 }
 
-interface ProductPageProps {
-  params: {
-    slug: string;
-  };
-}
-
 async function getProduct(slug: string): Promise<Vehicle | null> {
   try {
     const response = await fetch(
@@ -59,11 +53,11 @@ async function getProduct(slug: string): Promise<Vehicle | null> {
   }
 }
 
-async function ProductPage({ params }: { params: Promise<ProductPageProps> }) {
-  const { slug } = (await params).params;
+async function ProductPage({ params }: { params: Promise<{ slug: string }> }) {
+  const { slug } = await params;
 
   const product = await getProduct(slug);
-  console.log('Product:', product);
+
   if (!product) {
     return <VehicleNotFound />;
   }

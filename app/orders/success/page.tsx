@@ -3,8 +3,17 @@ import Link from 'next/link';
 
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { getDecodeToken } from '@/lib/generate-esewa-signature';
 
-export default function OrderSuccessPage() {
+export default async function OrderSuccessPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ data: string | undefined }>;
+}) {
+  const currentSearchParams = await searchParams;
+
+  const decodedData = getDecodeToken(currentSearchParams.data || '');
+  // console.log(decodedData);
   return (
     <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4">
       <div className="max-w-md w-full">
@@ -56,6 +65,7 @@ export default function OrderSuccessPage() {
           </CardContent>
         </Card>
       </div>
+      {/* {JSON.stringify(decodedData)} */}
     </div>
   );
 }

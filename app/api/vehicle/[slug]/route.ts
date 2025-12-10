@@ -9,7 +9,7 @@ export async function GET(
   try {
     const { slug } = await params;
 
-    console.log('mero ', slug);
+    // console.log('mero ', slug);
     if (!slug) {
       return NextResponse.json(
         { error: 'Slug parameter is required' },

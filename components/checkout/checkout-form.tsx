@@ -2,7 +2,9 @@
 
 import { Calendar, Car, FileText, MapPin, Shield } from 'lucide-react';
 import React, { useState } from 'react';
+import { toast } from 'sonner';
 
+import OrderSummary from '@/app/vehicles/[slug]/checkout/order-summary';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Checkbox } from '@/components/ui/checkbox';
@@ -40,13 +42,69 @@ export default function CheckoutForm({ vehicle }: CheckoutFormProps) {
     'esewa'
   );
 
+  const onSubmit = async () => {
+    if (!pickupDate || !pickupLocation || !acceptTerms || !acceptGuidelines) {
+      toast.error(
+        'Please fill in all required fields and accept the terms and guidelines.'
+      );
+      return;
+    }
+    const response = await fetch('/api/orders', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        vehicleId: vehicle.id,
+        pickupDate,
+        pickupLocation,
+        rentalDays,
+      }),
+    });
+    const result = await response.json();
+
+    if (!result?.success) {
+      alert(`Error: ${result?.message || 'Failed to create order'}`);
+      setIsProcessing(false);
+      return;
+    }
+
+    const orderId: string | undefined = result?.data?.order?.id;
+
+    if (!orderId) {
+      toast.error(`cannot proceed, the order isn't created `);
+      setIsProcessing(false);
+      return;
+    }
+    const paymentRes = await fetch('/api/payment', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        method: paymentMethod,
+        amount: finalTotal,
+        productName: vehicle.name,
+        transactionId: orderId,
+      }),
+    });
+
+    if (!paymentRes.ok) {
+      const err = await paymentRes.json().catch(() => ({}));
+      alert(`Payment init failed: ${err?.details || paymentRes.statusText}`);
+      setIsProcessing(false);
+      return;
+    }
+    const paymentData = await paymentRes.json();
+    // console.log('paymentData', paymentData);
+    setIsProcessing(false);
+  };
+
   // Calculate minimum date (today)
   const today = new Date().toISOString().split('T')[0];
 
   // Calculate total cost
   const totalCost = vehicle.costPerDay * rentalDays;
-  const serviceFee = totalCost * 0.1; // 10% service fee
-  const taxes = totalCost * 0.05; // 5% taxes
+  const serviceFee = 0; // 10% service fee
+  const taxes = 0; // 5% taxes
   const finalTotal = totalCost + serviceFee + taxes;
 
   const handleDateChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -56,111 +114,6 @@ export default function CheckoutForm({ vehicle }: CheckoutFormProps) {
 
     if (selectedDate >= today) {
       setPickupDate(e.target.value);
-    }
-  };
-
-  const handleCheckout = async () => {
-    if (!pickupDate || !pickupLocation || !acceptTerms || !acceptGuidelines) {
-      alert(
-        'Please fill in all required fields and accept the terms and guidelines.'
-      );
-      return;
-    }
-
-    setIsProcessing(true);
-
-    try {
-      // 1) Create order first
-      const response = await fetch('/api/orders', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          vehicleId: vehicle.id,
-          pickupDate,
-          pickupLocation,
-          rentalDays,
-        }),
-      });
-      const result = await response.json();
-
-      if (!result?.success) {
-        alert(`Error: ${result?.message || 'Failed to create order'}`);
-        setIsProcessing(false);
-        return;
-      }
-
-      const orderId: string | undefined = result?.data?.order?.id;
-      // Normalize to whole-rupee string to avoid float precision mismatches
-      const amountStr = Math.round(finalTotal).toString();
-
-      // 2) Initiate selected payment session
-      const paymentRes = await fetch('/api/payment', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          method: paymentMethod,
-          amount: amountStr,
-          productName: vehicle.name,
-          transactionId: orderId || `${vehicle.slug}-${Date.now()}`,
-        }),
-      });
-
-      if (!paymentRes.ok) {
-        const err = await paymentRes.json().catch(() => ({}));
-        alert(`Payment init failed: ${err?.details || paymentRes.statusText}`);
-        setIsProcessing(false);
-        return;
-      }
-      const paymentData = await paymentRes.json();
-
-      if (paymentMethod === 'khalti') {
-        const url = paymentData?.khaltiPaymentUrl as string | undefined;
-        if (!url) {
-          alert('Khalti payment URL not received');
-          setIsProcessing(false);
-          return;
-        }
-        window.location.href = url;
-        return;
-      }
-
-      // eSewa: Auto-submit form
-      const form = document.createElement('form');
-      form.method = 'POST';
-      form.action = 'https://rc-epay.esewa.com.np/api/epay/main/v2/form';
-
-      const esewaPayload: Record<string, string | number> = {
-        amount: paymentData.amount,
-        tax_amount: paymentData.esewaConfig.tax_amount,
-        total_amount: paymentData.esewaConfig.total_amount,
-        transaction_uuid: paymentData.esewaConfig.transaction_uuid,
-        product_code: paymentData.esewaConfig.product_code,
-        product_service_charge: paymentData.esewaConfig.product_service_charge,
-        product_delivery_charge:
-          paymentData.esewaConfig.product_delivery_charge,
-        success_url: paymentData.esewaConfig.success_url,
-        failure_url: paymentData.esewaConfig.failure_url,
-        signed_field_names: paymentData.esewaConfig.signed_field_names,
-        signature: paymentData.esewaConfig.signature,
-      };
-
-      Object.entries(esewaPayload).forEach(([key, value]) => {
-        const input = document.createElement('input');
-        input.type = 'hidden';
-        input.name = key;
-        input.value = String(value);
-        form.appendChild(input);
-      });
-
-      document.body.appendChild(form);
-      form.submit();
-      document.body.removeChild(form);
-    } catch (error) {
-      alert('An error occurred while processing your order. Please try again.');
-    } finally {
-      setIsProcessing(false);
     }
   };
 
@@ -441,27 +394,29 @@ export default function CheckoutForm({ vehicle }: CheckoutFormProps) {
                   </div>
                 )}
 
-                <Button
-                  onClick={handleCheckout}
-                  className="w-full"
-                  size="lg"
-                  disabled={
-                    !pickupDate ||
-                    !pickupLocation ||
-                    !acceptTerms ||
-                    !acceptGuidelines ||
-                    isProcessing
-                  }
-                >
-                  {isProcessing ? (
-                    <div className="flex items-center gap-2">
-                      <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
-                      Processing...
-                    </div>
-                  ) : (
-                    `Pay with ${paymentMethod === 'esewa' ? 'eSewa' : 'Khalti'} - ₹${finalTotal.toLocaleString()}`
-                  )}
-                </Button>
+                <OrderSummary amount={Number(totalCost)}>
+                  <Button
+                    onClick={onSubmit}
+                    className="w-full"
+                    size="lg"
+                    disabled={
+                      !pickupDate ||
+                      !pickupLocation ||
+                      !acceptTerms ||
+                      !acceptGuidelines ||
+                      isProcessing
+                    }
+                  >
+                    {isProcessing ? (
+                      <div className="flex items-center gap-2">
+                        <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                        Processing...
+                      </div>
+                    ) : (
+                      `Pay with ${paymentMethod === 'esewa' ? 'eSewa' : 'Khalti'} - ₹${finalTotal.toLocaleString()}`
+                    )}
+                  </Button>
+                </OrderSummary>
 
                 <p className="text-xs text-gray-500 text-center">
                   By completing this booking, you agree to our rental terms and

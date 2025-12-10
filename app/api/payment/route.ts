@@ -1,8 +1,8 @@
 'use server';
-import { NextResponse } from 'next/server';
-import { v4 as uuidv4 } from 'uuid';
 
-import { generateEsewaSignature } from '@/lib/generate-esewa-signature';
+import { NextResponse } from 'next/server';
+
+import { generatePaymentData } from '@/lib/generate-esewa-signature';
 import { PaymentMethod, PaymentRequestData } from '@/lib/types';
 
 export async function POST(req: Request) {
@@ -49,28 +49,33 @@ export async function POST(req: Request) {
             'Missing environment variable: NEXT_PUBLIC_BASE_URL or NEXT_PUBLIC_HOST_URL';
           throw new Error(msg);
         }
-        const transactionUuid = `${Date.now()}-${uuidv4()}`;
         const esewaConfig = {
           amount: amount,
           tax_amount: '0',
           total_amount: amount,
-          transaction_uuid: transactionUuid,
           product_code: esewaMerchant,
           product_service_charge: '0',
           product_delivery_charge: '0',
           // Redirect back to our app on success/failure
           success_url: `${baseUrl}/orders/success?method=esewa`,
-          failure_url: `${baseUrl}`,
+          failure_url: `${baseUrl}/orders/failed`,
           signed_field_names: 'total_amount,transaction_uuid,product_code',
         };
 
-        const signatureString = `total_amount=${esewaConfig.total_amount},transaction_uuid=${esewaConfig.transaction_uuid},product_code=${esewaConfig.product_code}`;
-        const signature = generateEsewaSignature(esewaSecret!, signatureString);
-        return NextResponse.json({
+        // const signatureString = `total_amount=${esewaConfig.total_amount},transaction_uuid=${esewaConfig.transaction_uuid},product_code=${esewaConfig.product_code}`;
+        const encryptedData = generatePaymentData(
+          Number(esewaConfig.total_amount)
+        );
+        const signature = encryptedData.hashInBase64;
+        const transaction_uuid = encryptedData.transaction_uuid;
+
+        console.log('esewa res', {
           amount: String(amount),
           esewaConfig: {
             ...esewaConfig,
             signature: String(signature),
+            transaction_uuid: transaction_uuid,
+
             // Keep all values as strings to ensure exact match with signature
             product_service_charge: String(esewaConfig.product_service_charge),
             product_delivery_charge: String(
@@ -81,9 +86,27 @@ export async function POST(req: Request) {
           },
           // Debug only: compare this to your posted values if ES104 persists
           debug:
-            process.env.NODE_ENV !== 'production'
-              ? { signatureString }
-              : undefined,
+            process.env.NODE_ENV !== 'production' ? { signature } : undefined,
+        });
+
+        return NextResponse.json({
+          amount: String(amount),
+          esewaConfig: {
+            ...esewaConfig,
+            signature: String(signature),
+            transaction_uuid: transaction_uuid,
+
+            // Keep all values as strings to ensure exact match with signature
+            product_service_charge: String(esewaConfig.product_service_charge),
+            product_delivery_charge: String(
+              esewaConfig.product_delivery_charge
+            ),
+            tax_amount: String(esewaConfig.tax_amount),
+            total_amount: String(esewaConfig.total_amount),
+          },
+          // Debug only: compare this to your posted values if ES104 persists
+          debug:
+            process.env.NODE_ENV !== 'production' ? { signature } : undefined,
         });
       }
       case 'khalti': {

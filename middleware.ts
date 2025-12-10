@@ -29,8 +29,13 @@ export async function middleware(req: NextRequest) {
     return NextResponse.next();
   }
 
-  // Vehicles protected routes
-  if (!pathname.startsWith('/vehicles')) return NextResponse.next();
+  // Protected routes
+  if (
+    !pathname.startsWith('/vehicles') &&
+    !pathname.startsWith('/profile') &&
+    !pathname.startsWith('/orders')
+  )
+    return NextResponse.next();
 
   const token = req.cookies.get('token')?.value;
   if (!token) {
@@ -68,5 +73,5 @@ export async function middleware(req: NextRequest) {
 }
 
 export const config = {
-  matcher: ['/vehicles/:path*', '/login'],
+  matcher: ['/vehicles/:path*', '/profile', '/orders', '/login'],
 };

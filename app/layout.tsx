@@ -4,6 +4,7 @@ import type { Metadata } from 'next';
 import { Geist_Mono } from 'next/font/google';
 
 import Navbar from '@/components/navbar';
+import Providers from '@/components/providers';
 import { Toaster } from '@/components/ui/sonner';
 
 const geistMono = Geist_Mono({
@@ -47,9 +48,11 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={` ${geistMono.variable} antialiased`}>
-        <Toaster />
-        <Navbar />
-        {children}
+        <Providers>
+          <Toaster />
+          <Navbar />
+          {children}
+        </Providers>
       </body>
     </html>
   );

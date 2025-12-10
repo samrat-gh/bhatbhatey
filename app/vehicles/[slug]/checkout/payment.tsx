@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { toast } from 'sonner';
 
 import { Button } from '@/components/ui/button';
@@ -14,24 +14,27 @@ import {
 } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { DummyDataResponse } from '@/lib/types';
 
+// NOTE: Server returns all numeric-looking values as strings (needed for signature integrity)
 interface EsewaConfig {
-  tax_amount: number;
-  total_amount: number;
+  amount?: string; // present on server internal object, we rely on top-level amount for posting
+  tax_amount: string;
+  total_amount: string;
   transaction_uuid: string;
   product_code: string;
-  product_service_charge: number;
-  product_delivery_charge: number;
+  product_service_charge: string;
+  product_delivery_charge: string;
   success_url: string;
   failure_url: string;
-  signed_field_names: string;
+  signed_field_names: string; // eSewa expects exactly the fields used to build signature, comma separated
   signature: string;
 }
 
 interface PaymentResponse {
-  amount: string;
+  amount: string; // echo of requested amount
   esewaConfig: EsewaConfig;
+  debug?: { signatureString: string };
+  error?: string;
 }
 
 export default function EsewaPayment() {
@@ -41,41 +44,13 @@ export default function EsewaPayment() {
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
 
-  useEffect(() => {
-    const fetchDummyData = async () => {
-      try {
-        const response = await fetch('/api/dummy-data?method=esewa');
-        if (!response.ok) {
-          throw new Error(`HTTP error! status: ${response.status}`);
-        }
-        const data: DummyDataResponse = await response.json();
-        setAmount(data.amount);
-        setProductName(data.productName);
-        setTransactionId(data.transactionId);
-
-        toast.success('Data loaded successfully', {
-          description: 'Payment details have been pre-filled.',
-        });
-      } catch (error) {
-        const errorMessage =
-          error instanceof Error ? error.message : 'An unknown error occurred';
-        console.error('Error fetching dummy data:', errorMessage);
-
-        toast.error('Error loading data', {
-          description: 'Failed to load initial data. Please refresh the page.',
-        });
-      }
-    };
-
-    fetchDummyData();
-  }, [toast]);
   const handlePayment = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setIsLoading(true);
     setError(null);
 
     try {
-      const response = await fetch('/api/initiate-payment', {
+      const response = await fetch('/api/payment', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -93,44 +68,32 @@ export default function EsewaPayment() {
       }
 
       const paymentData: PaymentResponse = await response.json();
+      if (paymentData.error) {
+        throw new Error(paymentData.error);
+      }
+      if (process.env.NODE_ENV !== 'production') {
+        // eslint-disable-next-line no-console
+        console.log('[eSewa] Payment Data (raw):', paymentData);
+        if (paymentData.debug) {
+          // eslint-disable-next-line no-console
+          console.log(
+            '[eSewa] Signature String Used:',
+            paymentData.debug.signatureString
+          );
+        }
+      }
       toast.success('Payment Initiated', {
         description: 'Redirecting to eSewa payment gateway...',
       });
-
-      const form = document.createElement('form');
-      form.method = 'POST';
-      form.action = 'https://rc-epay.esewa.com.np/api/epay/main/v2/form';
-
-      const esewaPayload = {
-        amount: paymentData.amount,
-        tax_amount: paymentData.esewaConfig.tax_amount,
-        total_amount: paymentData.esewaConfig.total_amount,
-        transaction_uuid: paymentData.esewaConfig.transaction_uuid,
-        product_code: paymentData.esewaConfig.product_code,
-        product_service_charge: paymentData.esewaConfig.product_service_charge,
-        product_delivery_charge:
-          paymentData.esewaConfig.product_delivery_charge,
-        success_url: paymentData.esewaConfig.success_url,
-        failure_url: paymentData.esewaConfig.failure_url,
-        signed_field_names: paymentData.esewaConfig.signed_field_names,
-        signature: paymentData.esewaConfig.signature,
-      };
-      console.log({ esewaPayload });
-      Object.entries(esewaPayload).forEach(([key, value]) => {
-        const input = document.createElement('input');
-        input.type = 'hidden';
-        input.name = key;
-        input.value = String(value);
-        form.appendChild(input);
-      });
-
-      document.body.appendChild(form);
-      form.submit();
-      document.body.removeChild(form);
+      // Build and submit eSewa form (safer encapsulated helper)
+      buildAndSubmitEsewaForm(paymentData);
     } catch (error) {
       const errorMessage =
         error instanceof Error ? error.message : 'An unknown error occurred';
-      console.error('Payment error:', errorMessage);
+      if (process.env.NODE_ENV !== 'production') {
+        // eslint-disable-next-line no-console
+        console.error('Payment error:', errorMessage);
+      }
       setError('Payment initiation failed. Please try again.');
       toast.error('Payment Error', {
         description: 'Payment initiation failed. Please try again.',
@@ -203,4 +166,87 @@ export default function EsewaPayment() {
       </Card>
     </div>
   );
+}
+
+// --- Helper Functions (file-local) --- //
+function buildAndSubmitEsewaForm(paymentData: PaymentResponse) {
+  const { esewaConfig, amount } = paymentData;
+  console.log(esewaConfig);
+  // Basic runtime validation before attempting submission
+  const requiredFields: Array<[string, string | undefined]> = [
+    ['amount', amount],
+    ['tax_amount', esewaConfig.tax_amount],
+    ['total_amount', esewaConfig.total_amount],
+    ['transaction_uuid', esewaConfig.transaction_uuid],
+    ['product_code', esewaConfig.product_code],
+    ['product_service_charge', esewaConfig.product_service_charge],
+    ['product_delivery_charge', esewaConfig.product_delivery_charge],
+    ['success_url', esewaConfig.success_url],
+    ['failure_url', esewaConfig.failure_url],
+    ['signed_field_names', esewaConfig.signed_field_names],
+    ['signature', esewaConfig.signature],
+  ];
+
+  const missing = requiredFields.filter(([, v]) => v == null || v === '');
+  if (missing.length) {
+    if (process.env.NODE_ENV !== 'production') {
+      // eslint-disable-next-line no-console
+      console.error(
+        '[eSewa] Missing required fields for form submission:',
+        missing.map(([k]) => k)
+      );
+    }
+    throw new Error(
+      'Missing eSewa form fields: ' + missing.map(([k]) => k).join(',')
+    );
+  }
+
+  const form = document.createElement('form');
+  form.method = 'POST';
+  form.action = 'https://rc-epay.esewa.com.np/api/epay/main/v2/form';
+  form.style.display = 'none';
+  form.setAttribute('accept-charset', 'UTF-8');
+
+  const esewaPayload: Record<string, string> = {
+    amount: String(amount),
+    tax_amount: esewaConfig.tax_amount,
+    total_amount: esewaConfig.total_amount,
+    transaction_uuid: esewaConfig.transaction_uuid,
+    product_code: esewaConfig.product_code,
+    product_service_charge: esewaConfig.product_service_charge,
+    product_delivery_charge: esewaConfig.product_delivery_charge,
+    success_url: esewaConfig.success_url,
+    failure_url: esewaConfig.failure_url,
+    signed_field_names: esewaConfig.signed_field_names,
+    signature: esewaConfig.signature,
+  };
+
+  console.log(esewaPayload);
+
+  if (process.env.NODE_ENV !== 'production') {
+    // eslint-disable-next-line no-console
+    console.group('[eSewa] Preparing form submission');
+    // eslint-disable-next-line no-console
+    console.table(esewaPayload);
+    // eslint-disable-next-line no-console
+    console.groupEnd();
+  }
+
+  Object.entries(esewaPayload).forEach(([key, value]) => {
+    const input = document.createElement('input');
+    input.type = 'hidden';
+    input.name = key;
+    input.value = value;
+    form.appendChild(input);
+  });
+
+  document.body.appendChild(form);
+  try {
+    form.submit();
+  } finally {
+    // Delay removal a tick in case immediate removal interferes in some browsers
+    setTimeout(() => {
+      if (form.parentNode) form.parentNode.removeChild(form);
+    }, 2000);
+  }
 }
